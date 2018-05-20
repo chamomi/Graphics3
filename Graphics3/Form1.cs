@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+//using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -13,8 +14,10 @@ namespace Graphics3
     public partial class Form1 : Form
     {
         private int x1, y1, x2, y2;
+        private int cx1, cy1, cx2, cy2;
         private Bitmap img;
-        private bool dda, midpoint, xline, xcircle, copy;
+        private bool dda, midpoint, xline, xcircle, copy, cs, vs;
+        bool ongo = false;
 
         public Form1()
         {
@@ -22,14 +25,17 @@ namespace Graphics3
             img = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             pictureBox1.Image = img;
             x1 = x2 = y1 = y2 = -1;
+            cx1 = cx2 = cy1 = cy2 = -1;
             dda = true;
-            midpoint = xline = xcircle = copy = false;
+            midpoint = xline = xcircle = copy = cs = vs = false;
         }
 
         private void Draw(object sender, EventArgs e)
         {
             int x = ((MouseEventArgs)e).X;
             int y = ((MouseEventArgs)e).Y;
+
+            if (ongo) return;
 
             if (x1 == -1 || y1 == -1)
             {
@@ -38,6 +44,7 @@ namespace Graphics3
             else
             {
                 x2 = x; y2 = y;
+                //Trace.WriteLine("line " + x1 + " " + x2 + " " + y1 + " " + y2);
                 if (dda)
                     DDA(x1, pictureBox1.Height - y1, x2, pictureBox1.Height - y2);
                 else if (midpoint)
@@ -48,12 +55,62 @@ namespace Graphics3
                     XCircle(x1, pictureBox1.Height - y1, x2, pictureBox1.Height - y2);
                 else if (copy)
                     PixelCopying(x1, pictureBox1.Height - y1, x2, pictureBox1.Height - y2);
+                else if ((cs) && (!ongo))
+                {
+                    MessageBox.Show("Mark target rectangle");
+                    ongo = true;
+                }
 
-                x1 = x2 = y1 = y2 = -1;
+                if (!cs)
+                    x1 = x2 = y1 = y2 = -1;
             }
             pictureBox1.Image = img;
         }
 
+        private void mdown(object sender, MouseEventArgs e)
+        {
+            if ((cs) && (x1 != -1) && (x2 != -1))
+            {
+                int x = ((MouseEventArgs)e).X;
+                int y = ((MouseEventArgs)e).Y;
+                cx1 = x;
+                cy1 = y;
+            }
+        }
+
+        private void mup(object sender, MouseEventArgs e)
+        {
+            if ((cs) && (x1 != -1) && (x2 != -1) && (cx1 != -1))
+            {
+                int x = ((MouseEventArgs)e).X;
+                int y = ((MouseEventArgs)e).Y;
+                int tmp;
+                cx2 = x;
+                cy2 = y;
+
+                if (cx2 < cx1)
+                { tmp = cx2; cx2 = cx1; cx1 = tmp; }
+                if (cy2 < cy1)
+                { tmp = cy2; cy2 = cy1; cy1 = tmp; }
+                RectangleF rect = new RectangleF(cx1, cy1, cx2 - cx1, cy2 - cy1);
+
+                DDA(cx1, pictureBox1.Height - cy1, cx2, pictureBox1.Height - cy1);//top line
+                DDA(cx1, pictureBox1.Height - cy2, cx2, pictureBox1.Height - cy2);//bottom line
+                DDA(cx1, pictureBox1.Height - cy1, cx1, pictureBox1.Height - cy2);//left
+                DDA(cx2, pictureBox1.Height - cy1, cx2, pictureBox1.Height - cy2);//right
+
+                if (cs)
+                    CohenSutherland(x1, y1, x2, y2, rect);
+
+                pictureBox1.Image = img;
+                x1 = x2 = y1 = y2 = -1;
+                cx1 = cx2 = cy1 = cy2 = -1;
+                ongo = false;
+            }
+        }
+
+
+        #region Lab3
         private void DDA(int x1, int y1, int x2, int y2)
         {
             float step;
@@ -270,6 +327,7 @@ namespace Graphics3
             return (float)Math.Ceiling(x) - x;
         }
 
+
         private void PixelCopying(int x1, int y1, int x2, int y2)
         {
             //int thick = Int32.Parse(Thick.Text);
@@ -345,42 +403,144 @@ namespace Graphics3
                     img.SetPixel(x + 1, img.Height - 1 - y - 1, color);  //down right
             }
         }
+        #endregion
+
+        #region Lab4
+
+
+        enum Outcodes
+        {
+            LEFT = 1,
+            RIGHT = 2,
+            BOTTOM = 4,
+            TOP = 8
+        };
+
+        byte ComputeOutcode(int x, int y, RectangleF clip)
+        {
+            byte outcode = 0;
+            if (x > clip.Right) outcode |= (byte)Outcodes.RIGHT;
+            else if (x < clip.Left) outcode |= (byte)Outcodes.LEFT;
+            if (y > clip.Bottom) outcode |= (byte)Outcodes.TOP;
+            else if (y < clip.Top) outcode |= (byte)Outcodes.BOTTOM;
+
+            return outcode;
+        }
+        void CohenSutherland(int x1, int y1, int x2, int y2, RectangleF clip)
+        {
+            bool accept = false, done = false;
+            byte outcode1 = ComputeOutcode(x1, y1, clip);
+            byte outcode2 = ComputeOutcode(x2, y2, clip);
+            do
+            {
+                if ((outcode1 | outcode2) == 0)
+                { //trivially accepted
+                    accept = true;
+                    done = true;
+                }
+                else if ((outcode1 & outcode2) != 0)
+                { //trivially rejected
+                    accept = false;
+                    done = true;
+                }
+                else
+                { //subdivide
+                    byte outcodeOut = (outcode1 != 0) ? outcode1 : outcode2;
+                    int x = 0;
+                    int y = 0;
+                    if ((outcodeOut & (byte)Outcodes.BOTTOM) != 0)
+                    {
+                        x = x1 + (x2 - x1) * ((int)clip.Top - y1) / (y2 - y1);
+                        y = (int)clip.Top;
+                    }
+                    else if ((outcodeOut & (byte)Outcodes.TOP) != 0)
+                    {
+                        x = x1 + (x2 - x1) * ((int)clip.Bottom - y1) / (y2 - y1);
+                        y = (int)clip.Bottom;
+                    }
+                    else if ((outcodeOut & (byte)Outcodes.RIGHT) != 0)
+                    {
+                        x = x1 + (x2 - x1) * ((int)clip.Right - y1) / (y2 - y1);
+                        y = (int)clip.Right;
+                    }
+                    else if ((outcodeOut & (byte)Outcodes.LEFT) != 0)
+                    {
+                        x = x1 + (x2 - x1) * ((int)clip.Left - y1) / (y2 - y1);
+                        y = (int)clip.Left;
+                    }
+
+
+                    if (outcodeOut == outcode1)
+                    {
+                        x1 = x;
+                        y1 = y;
+                        outcode1 = ComputeOutcode(x1, y1, clip);
+                    }
+                    else
+                    {
+                        x2 = x;
+                        y2 = y;
+                        outcode2 = ComputeOutcode(x2, y2, clip);
+                    }
+                }
+            } while (!done);
+
+            if (accept)
+                DDA(x1, pictureBox1.Height - y1, x2, pictureBox1.Height - y2);
+        }
+
+
+
+
+        #endregion
 
         //menu
         private void dDAToolStripMenuItem_Click(object sender, EventArgs e)
         {
             dda = true;
-            midpoint = xline = xcircle = copy = false;
+            midpoint = xline = xcircle = copy = cs = vs = false;
         }
 
         private void midpointCircleAdditionsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             midpoint = true;
-            dda = xline = xcircle = copy = false;
+            dda = xline = xcircle = copy = cs = vs = false;
         }
 
         private void lineToolStripMenuItem_Click(object sender, EventArgs e)
         {
             xline = true;
-            dda = midpoint = xcircle = copy = false;
+            dda = midpoint = xcircle = copy = cs = vs = false;
         }
 
         private void circleToolStripMenuItem_Click(object sender, EventArgs e)
         {
             xcircle = true;
-            dda = midpoint = xline = copy = false;
+            dda = midpoint = xline = copy = cs = vs = false;
         }
 
         private void thickLineToolStripMenuItem_Click(object sender, EventArgs e)
         {
             copy = true;
-            dda = midpoint = xline = xcircle = false;
+            dda = midpoint = xline = xcircle = cs = vs = false;
         }
 
         private void cleanToolStripMenuItem_Click(object sender, EventArgs e)
         {
             img = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             pictureBox1.Image = img;
+        }
+
+        private void cohenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            cs = true;
+            dda = midpoint = xline = xcircle = copy = vs = false;
+        }
+
+        private void vertexSortingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            vs = true;
+            dda = midpoint = xline = xcircle = copy = cs = false;
         }
     }
 }

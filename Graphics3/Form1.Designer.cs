@@ -40,6 +40,8 @@
             this.lineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.circleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cleanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cohenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.vertexSortingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -53,13 +55,17 @@
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.Draw);
+            this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.mdown);
+            this.pictureBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.mup);
             // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.modeToolStripMenuItem1,
             this.modeToolStripMenuItem,
-            this.cleanToolStripMenuItem});
+            this.cleanToolStripMenuItem,
+            this.cohenToolStripMenuItem,
+            this.vertexSortingToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(652, 24);
@@ -142,6 +148,20 @@
             this.cleanToolStripMenuItem.Text = "Clean";
             this.cleanToolStripMenuItem.Click += new System.EventHandler(this.cleanToolStripMenuItem_Click);
             // 
+            // cohenToolStripMenuItem
+            // 
+            this.cohenToolStripMenuItem.Name = "cohenToolStripMenuItem";
+            this.cohenToolStripMenuItem.Size = new System.Drawing.Size(116, 20);
+            this.cohenToolStripMenuItem.Text = "Cohen-Sutherland";
+            this.cohenToolStripMenuItem.Click += new System.EventHandler(this.cohenToolStripMenuItem_Click);
+            // 
+            // vertexSortingToolStripMenuItem
+            // 
+            this.vertexSortingToolStripMenuItem.Name = "vertexSortingToolStripMenuItem";
+            this.vertexSortingToolStripMenuItem.Size = new System.Drawing.Size(91, 20);
+            this.vertexSortingToolStripMenuItem.Text = "Vertex sorting";
+            this.vertexSortingToolStripMenuItem.Click += new System.EventHandler(this.vertexSortingToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -174,6 +194,8 @@
         private System.Windows.Forms.ToolStripMenuItem lineToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem circleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cleanToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem cohenToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem vertexSortingToolStripMenuItem;
     }
 }
 
