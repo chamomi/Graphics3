@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-//using System.Diagnostics;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -450,21 +450,25 @@ namespace Graphics3
                     int y = 0;
                     if ((outcodeOut & (byte)Outcodes.BOTTOM) != 0)
                     {
+                        Trace.WriteLine("bottom");
                         x = x1 + (x2 - x1) * ((int)clip.Top - y1) / (y2 - y1);
                         y = (int)clip.Top;
                     }
                     else if ((outcodeOut & (byte)Outcodes.TOP) != 0)
                     {
+                        Trace.WriteLine("top");
                         x = x1 + (x2 - x1) * ((int)clip.Bottom - y1) / (y2 - y1);
                         y = (int)clip.Bottom;
                     }
                     else if ((outcodeOut & (byte)Outcodes.RIGHT) != 0)
                     {
+                        Trace.WriteLine("right");
                         x = x1 + (x2 - x1) * ((int)clip.Right - y1) / (y2 - y1);
                         y = (int)clip.Right;
                     }
                     else if ((outcodeOut & (byte)Outcodes.LEFT) != 0)
                     {
+                        Trace.WriteLine("left");
                         x = x1 + (x2 - x1) * ((int)clip.Left - y1) / (y2 - y1);
                         y = (int)clip.Left;
                     }
@@ -485,11 +489,39 @@ namespace Graphics3
                 }
             } while (!done);
 
+            Trace.WriteLine(accept);
             if (accept)
+            {
                 DDA(x1, pictureBox1.Height - y1, x2, pictureBox1.Height - y2);
+            }
         }
 
-
+        //void fillPolygon()
+        //{
+        //    k = 0
+        //    i = indices[k]
+        //    ymin = P[indices[0]]
+        //    ymax = P[indices[N - 1]]
+        //    for (y = ymin; y <= ymax;)
+        //    {
+        //        while (P[i].y == y)
+        //        {
+        //            // remember to wrap indices in polygon
+        //            if (P[i - 1].y > P[i].y)
+        //                AET.add(P[i], P[i - 1])
+        //        if (P[i + 1].y > P[i].y)
+        //                AET.add(P[i], P[i + 1])
+        //                ++k
+        //                i = indices[k]
+        //        }
+        //        sort AET by x value
+        //        fill pixels between pairs of intersections
+        //        ++y
+        //        remove from AET edges for which ymax = y
+        //        for each edge in AET
+        //        x += 1 / m
+        //    }
+        //}
 
 
         #endregion
