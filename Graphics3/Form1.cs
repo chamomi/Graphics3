@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-//using System.Diagnostics;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -18,6 +18,11 @@ namespace Graphics3
         private Bitmap img;
         private bool dda, midpoint, xline, xcircle, copy, cs, vs;
         bool ongo = false;
+        bool vsgo = false;
+        List<Point> P = new List<Point>();
+        int N = 4;
+        int[] indices = new int[4];
+        List<aetEl> AET = new List<aetEl>();
 
         public Form1()
         {
@@ -36,6 +41,7 @@ namespace Graphics3
             int y = ((MouseEventArgs)e).Y;
 
             if (ongo) return;
+            if (vsgo) return;
 
             if (x1 == -1 || y1 == -1)
             {
@@ -60,6 +66,11 @@ namespace Graphics3
                     MessageBox.Show("Mark target rectangle");
                     ongo = true;
                 }
+                //else if ((vs) && (vsgo))
+                //{
+                //    MessageBox.Show("Mark target rectangle");
+                //    vsgo = true;
+                //}
 
                 if (!cs)
                     x1 = x2 = y1 = y2 = -1;
@@ -69,7 +80,7 @@ namespace Graphics3
 
         private void mdown(object sender, MouseEventArgs e)
         {
-            if ((cs) && (x1 != -1) && (x2 != -1))
+            if (((cs) && (x1 != -1) && (x2 != -1)) || (vs))
             {
                 int x = ((MouseEventArgs)e).X;
                 int y = ((MouseEventArgs)e).Y;
@@ -80,7 +91,7 @@ namespace Graphics3
 
         private void mup(object sender, MouseEventArgs e)
         {
-            if ((cs) && (x1 != -1) && (x2 != -1) && (cx1 != -1))
+            if (((cs) && (x1 != -1) && (x2 != -1) && (cx1 != -1)) || (vs))
             {
                 int x = ((MouseEventArgs)e).X;
                 int y = ((MouseEventArgs)e).Y;
@@ -98,14 +109,27 @@ namespace Graphics3
                 DDA(cx1, pictureBox1.Height - cy2, cx2, pictureBox1.Height - cy2);//bottom line
                 DDA(cx1, pictureBox1.Height - cy1, cx1, pictureBox1.Height - cy2);//left
                 DDA(cx2, pictureBox1.Height - cy1, cx2, pictureBox1.Height - cy2);//right
+                pictureBox1.Image = img;
 
                 if (cs)
                     CohenSutherland(x1, y1, x2, y2, rect);
+                if (vs)
+                {
+                    P.Add(new Point(cx1, cy1));
+                    P.Add(new Point(cx2, cy1));
+                    P.Add(new Point(cx1, cy2));
+                    P.Add(new Point(cx2, cy2));
+                    indices[0] = 0;
+                    indices[1] = 1;
+                    indices[2] = 2;
+                    indices[3] = 3;
+                    VertSort();
+                }
 
                 pictureBox1.Image = img;
                 x1 = x2 = y1 = y2 = -1;
                 cx1 = cx2 = cy1 = cy2 = -1;
-                ongo = false;
+                ongo = vsgo = false;
             }
         }
 
@@ -407,7 +431,6 @@ namespace Graphics3
 
         #region Lab4
 
-
         enum Outcodes
         {
             LEFT = 1,
@@ -425,7 +448,8 @@ namespace Graphics3
             else if (y < clip.Top) outcode |= (byte)Outcodes.BOTTOM;
 
             return outcode;
-        }
+        }
+
         void CohenSutherland(int x1, int y1, int x2, int y2, RectangleF clip)
         {
             bool accept = false, done = false;
@@ -460,15 +484,14 @@ namespace Graphics3
                     }
                     else if ((outcodeOut & (byte)Outcodes.RIGHT) != 0)
                     {
-                        x = x1 + (x2 - x1) * ((int)clip.Right - y1) / (y2 - y1);
-                        y = (int)clip.Right;
+                        y = y1 + (y2 - y1) * ((int)clip.Right - x1) / (x2 - x1);
+                        x = (int)clip.Right;
                     }
                     else if ((outcodeOut & (byte)Outcodes.LEFT) != 0)
                     {
-                        x = x1 + (x2 - x1) * ((int)clip.Left - y1) / (y2 - y1);
-                        y = (int)clip.Left;
+                        y = y1 + (y2 - y1) * ((int)clip.Left - x1) / (x2 - x1);
+                        x = (int)clip.Left;
                     }
-
 
                     if (outcodeOut == outcode1)
                     {
@@ -490,7 +513,62 @@ namespace Graphics3
         }
 
 
+        void VertSort()
+        {
+            int k = 0;
+            int m = 1;
+            int i = indices[k];
+            int ymin = P[indices[0]].Y;
+            int ymax = P[indices[N - 1]].Y;
+            for (int y = ymin; y <= ymax;)
+            {
+                while (P[i].Y == y)
+                {
+                    if (P[i - 1].Y > P[i].Y)
+                    {
+                        var el = new aetEl();
+                        el.ymax = P[i].Y;
+                        el.x = P[i].X;
+                        AET.Add(el);
+                        el.ymax = P[i - 1].Y;
+                        el.x = P[i - 1].X;
+                        AET.Add(el);
+                    }
+                    if (P[i + 1].Y > P[i].Y)
+                    {
+                        var el = new aetEl();
+                        el.ymax = P[i].Y;
+                        el.x = P[i].X;
+                        AET.Add(el);
+                        el.ymax = P[i + 1].Y;
+                        el.x = P[i + 1].X;
+                        AET.Add(el);
+                    }
+                    k++;
+                    i = indices[k];
+                }
+                //sort AET by x value
+                //fill pixels between pairs of intersections
+                AET = AET.OrderBy(o => o.x).ToList();
+                for (int a=cx1;a<cx2;a++)
+                    for(int b = cy1; b<cy2;a++)
+                    {
+                        img.SetPixel(a, b, Color.Aqua);
+                    }
+                y++;
 
+                foreach (var el in AET)
+                    if (el.ymax == ymax) AET.Remove(el);
+                for(int a=0; a<AET.Count;a++)
+                {
+                    Point p = new Point(AET[a].x + 1 / AET[a].m, AET[a].ymax);
+                    var el = new aetEl();
+                    el.ymax = p.Y;
+                    el.x = p.X;
+                    AET[a] = el;
+                }
+            }
+        }
 
         #endregion
 
@@ -541,6 +619,8 @@ namespace Graphics3
         {
             vs = true;
             dda = midpoint = xline = xcircle = copy = cs = false;
+            MessageBox.Show("Mark target rectangle");
+            vsgo = true;
         }
     }
 }
