@@ -34,11 +34,11 @@
             this.dDAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.midpointCircleAdditionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.xaolinWuToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.lineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.circleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.thickLineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Thick = new System.Windows.Forms.ToolStripTextBox();
-            this.lineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.circleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cleanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cohenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.vertexSortingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -106,6 +106,20 @@
             this.xaolinWuToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
             this.xaolinWuToolStripMenuItem.Text = "Xaolin Wu";
             // 
+            // lineToolStripMenuItem
+            // 
+            this.lineToolStripMenuItem.Name = "lineToolStripMenuItem";
+            this.lineToolStripMenuItem.Size = new System.Drawing.Size(104, 22);
+            this.lineToolStripMenuItem.Text = "Line";
+            this.lineToolStripMenuItem.Click += new System.EventHandler(this.lineToolStripMenuItem_Click);
+            // 
+            // circleToolStripMenuItem
+            // 
+            this.circleToolStripMenuItem.Name = "circleToolStripMenuItem";
+            this.circleToolStripMenuItem.Size = new System.Drawing.Size(104, 22);
+            this.circleToolStripMenuItem.Text = "Circle";
+            this.circleToolStripMenuItem.Click += new System.EventHandler(this.circleToolStripMenuItem_Click);
+            // 
             // thickLineToolStripMenuItem
             // 
             this.thickLineToolStripMenuItem.Name = "thickLineToolStripMenuItem";
@@ -126,20 +140,6 @@
             this.Thick.Name = "Thick";
             this.Thick.Size = new System.Drawing.Size(100, 23);
             this.Thick.Text = "1";
-            // 
-            // lineToolStripMenuItem
-            // 
-            this.lineToolStripMenuItem.Name = "lineToolStripMenuItem";
-            this.lineToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.lineToolStripMenuItem.Text = "Line";
-            this.lineToolStripMenuItem.Click += new System.EventHandler(this.lineToolStripMenuItem_Click);
-            // 
-            // circleToolStripMenuItem
-            // 
-            this.circleToolStripMenuItem.Name = "circleToolStripMenuItem";
-            this.circleToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.circleToolStripMenuItem.Text = "Circle";
-            this.circleToolStripMenuItem.Click += new System.EventHandler(this.circleToolStripMenuItem_Click);
             // 
             // cleanToolStripMenuItem
             // 
@@ -171,6 +171,7 @@
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Drawing";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.menuStrip1.ResumeLayout(false);

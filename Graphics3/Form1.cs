@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Graphics3
@@ -41,7 +35,6 @@ namespace Graphics3
             int y = ((MouseEventArgs)e).Y;
 
             if (ongo) return;
-            if (vsgo) return;
 
             if (x1 == -1 || y1 == -1)
             {
@@ -50,7 +43,6 @@ namespace Graphics3
             else
             {
                 x2 = x; y2 = y;
-                //Trace.WriteLine("line " + x1 + " " + x2 + " " + y1 + " " + y2);
                 if (dda)
                     DDA(x1, pictureBox1.Height - y1, x2, pictureBox1.Height - y2);
                 else if (midpoint)
@@ -66,11 +58,6 @@ namespace Graphics3
                     MessageBox.Show("Mark target rectangle");
                     ongo = true;
                 }
-                //else if ((vs) && (vsgo))
-                //{
-                //    MessageBox.Show("Mark target rectangle");
-                //    vsgo = true;
-                //}
 
                 if (!cs)
                     x1 = x2 = y1 = y2 = -1;
@@ -113,18 +100,6 @@ namespace Graphics3
 
                 if (cs)
                     CohenSutherland(x1, y1, x2, y2, rect);
-                if (vs)
-                {
-                    P.Add(new Point(cx1, cy1));
-                    P.Add(new Point(cx2, cy1));
-                    P.Add(new Point(cx1, cy2));
-                    P.Add(new Point(cx2, cy2));
-                    indices[0] = 0;
-                    indices[1] = 1;
-                    indices[2] = 2;
-                    indices[3] = 3;
-                    VertSort();
-                }
 
                 pictureBox1.Image = img;
                 x1 = x2 = y1 = y2 = -1;
@@ -512,64 +487,6 @@ namespace Graphics3
                 DDA(x1, pictureBox1.Height - y1, x2, pictureBox1.Height - y2);
         }
 
-
-        void VertSort()
-        {
-            int k = 0;
-            int m = 1;
-            int i = indices[k];
-            int ymin = P[indices[0]].Y;
-            int ymax = P[indices[N - 1]].Y;
-            for (int y = ymin; y <= ymax;)
-            {
-                while (P[i].Y == y)
-                {
-                    if (P[i - 1].Y > P[i].Y)
-                    {
-                        var el = new aetEl();
-                        el.ymax = P[i].Y;
-                        el.x = P[i].X;
-                        AET.Add(el);
-                        el.ymax = P[i - 1].Y;
-                        el.x = P[i - 1].X;
-                        AET.Add(el);
-                    }
-                    if (P[i + 1].Y > P[i].Y)
-                    {
-                        var el = new aetEl();
-                        el.ymax = P[i].Y;
-                        el.x = P[i].X;
-                        AET.Add(el);
-                        el.ymax = P[i + 1].Y;
-                        el.x = P[i + 1].X;
-                        AET.Add(el);
-                    }
-                    k++;
-                    i = indices[k];
-                }
-                //sort AET by x value
-                //fill pixels between pairs of intersections
-                AET = AET.OrderBy(o => o.x).ToList();
-                for (int a=cx1;a<cx2;a++)
-                    for(int b = cy1; b<cy2;a++)
-                    {
-                        img.SetPixel(a, b, Color.Aqua);
-                    }
-                y++;
-
-                foreach (var el in AET)
-                    if (el.ymax == ymax) AET.Remove(el);
-                for(int a=0; a<AET.Count;a++)
-                {
-                    Point p = new Point(AET[a].x + 1 / AET[a].m, AET[a].ymax);
-                    var el = new aetEl();
-                    el.ymax = p.Y;
-                    el.x = p.X;
-                    AET[a] = el;
-                }
-            }
-        }
-
         #endregion
 
         //menu
@@ -617,10 +534,8 @@ namespace Graphics3
 
         private void vertexSortingToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            vs = true;
-            dda = midpoint = xline = xcircle = copy = cs = false;
-            MessageBox.Show("Mark target rectangle");
-            vsgo = true;
+            var fil = new Filling();
+            fil.Show();
         }
     }
 }
