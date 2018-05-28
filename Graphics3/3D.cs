@@ -103,10 +103,10 @@ namespace Graphics3
 
         private Point project(Point3D v)
         {
-            int d = 50;
+            int d = 20;
             //Trace.WriteLine((int)(v.X * d / v.Z + 100));
             //Trace.WriteLine((int)(v.Y * d / v.Z + 100));
-            return new Point((int)(v.X * d / v.Z + 100), (int)(v.Y * d / v.Z + 100));
+            return new Point((int)((v.X+20) * d / (v.Z+20) + 100), (int)((v.Y+20) * d / (v.Z+20) + 100));
         }
 
     }
