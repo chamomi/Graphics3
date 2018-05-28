@@ -44,8 +44,18 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="TCD.Mathematics, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TCD.Mathematics.1.2.1\lib\portable-net4+sl4+wp7+win8\TCD.Mathematics.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="3D.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="3D.Designer.cs">
+      <DependentUpon>3D.cs</DependentUpon>
+    </Compile>
     <Compile Include="aetEl.cs" />
     <Compile Include="Edge.cs" />
     <Compile Include="Filling.cs">
@@ -62,6 +72,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="3D.resx">
+      <DependentUpon>3D.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Filling.resx">
       <DependentUpon>Filling.cs</DependentUpon>
     </EmbeddedResource>
@@ -77,6 +90,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

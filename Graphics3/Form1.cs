@@ -537,5 +537,11 @@ namespace Graphics3
             var fil = new Filling();
             fil.Show();
         }
+
+        private void dToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var graph3d = new _3D();
+            graph3d.Show();
+        }
     }
 }

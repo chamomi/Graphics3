@@ -42,6 +42,7 @@
             this.cleanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cohenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.vertexSortingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -65,7 +66,8 @@
             this.modeToolStripMenuItem,
             this.cleanToolStripMenuItem,
             this.cohenToolStripMenuItem,
-            this.vertexSortingToolStripMenuItem});
+            this.vertexSortingToolStripMenuItem,
+            this.dToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(652, 24);
@@ -162,6 +164,13 @@
             this.vertexSortingToolStripMenuItem.Text = "Vertex sorting";
             this.vertexSortingToolStripMenuItem.Click += new System.EventHandler(this.vertexSortingToolStripMenuItem_Click);
             // 
+            // dToolStripMenuItem
+            // 
+            this.dToolStripMenuItem.Name = "dToolStripMenuItem";
+            this.dToolStripMenuItem.Size = new System.Drawing.Size(33, 20);
+            this.dToolStripMenuItem.Text = "3D";
+            this.dToolStripMenuItem.Click += new System.EventHandler(this.dToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -197,6 +206,7 @@
         private System.Windows.Forms.ToolStripMenuItem cleanToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cohenToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem vertexSortingToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dToolStripMenuItem;
     }
 }
 
